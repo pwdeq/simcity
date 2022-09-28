@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load humanize %}
+
+
+<section class="ftco-section">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-md-6 text-center mb-5">
+					<h2 class="heading-section">요청 목록</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="table-wrap">
+<table class="table table-bordered table-dark table-hover">
+  <thead class="table-dark">
+    <tr>
+      <th scope="col" class="text-center">#</th>
+      <th scope="col" class="text-center">구분</th>
+      <th scope="col" class="text-center">보내는 닉네임</th>
+      <th scope="col" class="text-center">받는 닉네임</th>
+      <th scope="col" class="text-center">보내는 칩</th>
+      <th scope="col" class="text-center">받는 칩</th>
+      <th scope="col" class="text-center">요청 일시</th>
+      <th scope="col" class="text-center">상태</th>
+      <th scope="col" class="text-center">액션</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% if ticket_list %}
+
+    {% for ticket in ticket_list %}
+        {% if request.user == ticket.author or request.user.is_staff  %}
+
+            {% if ticket.action == "대기" %}
+                <tr class="qq">
+            {% else %}
+                <tr>
+            {% endif %}
+
+            <th scope="row" class="text-center">{{ ticket.id }}</th>
+            <td class="text-center " ><h6>{{ ticket.category }}</h6></td>
+            <td class="text-center">{{ ticket.nickname }}</td>
+            <td class="text-center">{{ ticket.nickname2 }}</td>
+            <td class="text-center">{{ ticket.chip_count|intcomma }}</td>
+            <td class="text-center">{{ ticket.transfered_chip_count|intcomma }}</td>
+            <td class="text-center">{{ ticket.create_date }}</td>
+            <td class="text-center">{{ ticket.action }}</td>
+
+                {% if ticket.action == "대기"    %}
+                {% if request.user.is_staff    %}
+
+                    <td class="text-center">
+                    <form method="post">
+                    {% csrf_token %}
+
+<!--                    <button type="submit" class="btn btn-warning btn-sm">요청하기</button>-->
+
+                    <button name="approve" value={{ticket.id}} type="submit" class="btn btn-warning btn-sm">승인</button>
+                    <button name="decline" value={{ticket.id}} type="submit" class="btn btn-warning btn-sm">취소</button>
+                    </form>
+                    </td>
+
+
+                {% else %}
+
+                    <td class="text-center">
+
+                        <form method="post">
+                    {% csrf_token %}
+                     <button name="decline" value={{ticket.id}} type="submit" class="btn btn-warning btn-sm">취소</button>
+                    </form>
+
+                    </td>
+                {% endif %}
+            {% else %}
+            <td></td>
+            {% endif %}
+        {% endif %}
+
+
+    </tr>
+    {% endfor %}
+
+{% else %}
+   <tr>
+       <td colspan="9" class="text-center">요청이 없습니다.</td>
+   </tr>
+{% endif %}
+
+
+ </tbody>
+</table>
+                              {% if request.user.is_staff    %}
+{% else %}
+<a href="/trans/create/" class="btn btn-danger">칩 트랜 요청</a>
+                        {% endif %}
+
+
+
+
+                            <!-- 페이징처리 시작 -->
+    <ul class="pagination pagination-sm justify-content-center ">
+        <!-- 이전페이지 -->
+        {% if ticket_list.has_previous %}
+        <li class="page-item ">
+            <a class="page-link" href="?page={{ ticket_list.previous_page_number }}">이전</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled ">
+            <a class="page-link " tabindex="-1" aria-disabled="true" href="#">이전</a>
+        </li>
+        {% endif %}
+        <!-- 페이지리스트 -->
+        {% for page_number in ticket_list.paginator.page_range %}
+        {% if page_number >= ticket_list.number|add:-5 and page_number <= ticket_list.number|add:5 %}
+
+        {% if page_number == ticket_list.number %}
+        <li class="page-item active " aria-current="page">
+            <a class="page-link " href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% else %}
+        <li class="page-item ">
+            <a class="page-link " href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% endif %}
+        {% endif %}
+
+        {% endfor %}
+        <!-- 다음페이지 -->
+        {% if ticket_list.has_next %}
+        <li class="page-item ">
+            <a class="page-link " href="?page={{ ticket_list.next_page_number }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled ">
+            <a class="page-link " tabindex="-1" aria-disabled="true" href="#">다음</a>
+        </li>
+        {% endif %}
+    </ul>
+    <!-- 페이징처리 끝 -->
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+<script>
+
+var money = $('#money').text();
+var money3 = $('#money3').text();
+var money2 = money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+var money4 = money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+$('#money').text(money2);
+$('#money2').text(money4);
+
+</script>
+{% endblock %}

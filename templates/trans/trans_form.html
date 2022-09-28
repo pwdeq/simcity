@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<section class="ftco-section">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-md-6 text-center mb-5">
+					<h2 class="heading-section">칩 트랜 요청</h2>
+				</div>
+			</div>
+    <form method="post">
+        {% csrf_token %}
+        <!-- 오류표시 Start -->
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for field in form %}
+            {% if field.errors %}
+            <div>
+                <strong>{{ field.label }}</strong>
+                {{ field.errors }}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- 오류표시 End -->
+        <div class="mb-1">
+            <label for="category" class="form-label">구분</label>
+
+            <select class="form-select form-select-sm form-control" name="category" id="category">
+
+              <option value="마그마 -> 포커브로스">마그마 -> 포커브로스</option>
+              <option value="포커브로스 -> 마그마">포커브로스 -> 마그마</option>
+            </select>
+        </div>
+
+        <div class="mb-1">
+            <label for="nickname" class="form-label">보낼 닉네임</label>
+            <input type="text" class="form-control" name="nickname" id="nickname"
+                   value="{{ form.nickname.value|default_if_none:'' }}">
+        </div>
+       <div class="mb-1">
+            <label for="nickname" class="form-label">받을 닉네임</label>
+            <input type="text" class="form-control" name="nickname2" id="nickname2"
+                   value="{{ form.nickname2.value|default_if_none:'' }}">
+               </div>
+        <div class="mb-1">
+            <label for="chip_count" class="form-label "  >보낼 칩 양</label>
+            <input type="text" class="form-control" id="chip_count" name="chip_count" onkeyup="inputNumberFormat(this);" />
+        </div>
+        <div class="mb-1">
+                <label for="transfered_chip_count" class="form-label " >받을 칩 양</label>
+               <input type="text" class="form-control" id="transfered_chip_count" name="transfered_chip_count"readonly="readonly" onkeyup="inputNumberFormat(this);" placeholder="보낼 칩 양을 입력하세요"/>
+
+        </div>
+
+<br>
+        <button type="submit" class="btn btn-warning btn-sm">요청하기</button>
+    </form>
+</div>
+
+</section>
+
+
+
+
+
+
+
+
+
+<script>
+$("#category").on("propertychange change paste input", function() {
+    $("#chip_count").val("");
+    $("#transfered_chip_count").val("");
+});
+$("#chip_count").on("propertychange change paste input", function() {
+
+    var chip_count = fnReplace($("#chip_count").val());
+	var ptm = 1500
+
+	if($("#category").val() == "마그마 -> 포커브로스"){
+        v = chip_count / ptm
+
+        v = v.toFixed(2)
+
+	    $("#transfered_chip_count").val(v);
+
+	}
+	else if($("#category").val() == "포커브로스 -> 마그마"){
+
+	    $("#transfered_chip_count").val(chip_count * ptm);
+
+	}
+
+	if($("#chip_count").val()==""){
+	        $("#transfered_chip_count").val("");
+	}
+
+
+});
+
+
+
+
+function fnReplace(val) {
+    var ret = 0;
+    if(typeof val != "undefined" && val != null && val != ""){
+        ret = Number(val.replace(/,/gi,''));
+    }
+    return ret;
+}
+
+ function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
+
+  
+
+</script>
+{% endblock %}
+
