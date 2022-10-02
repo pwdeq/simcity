@@ -20,7 +20,6 @@ def signup(request):
 
 def index(request):
     return render(request, 'common/index.html')
-    # return HttpResponse("안녕하세요 pybo에 오신것을 환영합니다.")
 
 
 # Create your views here.
