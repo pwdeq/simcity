@@ -308,6 +308,13 @@ h1, h2, h3, h4, h5, h6,
   font-weight: 500;
   line-height: 1.2; }
 
+mtop {
+text-shadow: -1px 0px yellow, 0px 1px yellow, 1px 0px yellow, 0px -1px yellow;}
+
+ptom{
+text-shadow: -1px 0px yellow, 0px 1px yellow, 1px 0px yellow, 0px -1px red;
+}
+
 h1, .h1 {
   font-size: 2.5rem; }
 
@@ -325,7 +332,7 @@ h5, .h5 {
 
 h6, .h6 {
   font-size: 1rem;
-  text-shadow: -1px 0px yellow, 0px 1px yellow, 1px 0px yellow, 0px -1px yellow; }
+   }
 
 .lead {
   font-size: 1.25rem;
